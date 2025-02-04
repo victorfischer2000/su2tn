@@ -41,7 +41,6 @@ def Cfuse(ja, jb, jab):
     Function returning the Fuse Clebsch-Gordan Tensor in-in-out fusing irreps ja and jb to jab.
     """
     assert any(np.isclose(np.arange(np.abs(ja - jb), ja + jb + 1), jab, atol=1e-5))
-    # assert jab in np.arange(np.abs(ja - jb), ja + jb + 1)
 
     cfuse = np.zeros((int(2 * ja + 1), int(2 * jb + 1), int(2 * jab + 1)))
     for ma_idx, ma in enumerate(np.arange(-ja, ja + 1)):
@@ -57,7 +56,6 @@ def Csplit(jab, ja, jb):
     Function returning the Split Clebsch-Gordan Tensor in-out-out splitting irrep jab into irreps ja and jb.
     """
     assert any(np.isclose(np.arange(np.abs(ja - jb), ja + jb + 1), jab, atol=1e-5))
-    # assert jab in np.arange(np.abs(ja - jb), ja + jb + 1)
 
     csplit = np.zeros((int(2 * jab + 1), int(2 * ja + 1), int(2 * jb + 1)))
     for mab_idx, mab in enumerate(np.arange(-jab, jab + 1)):

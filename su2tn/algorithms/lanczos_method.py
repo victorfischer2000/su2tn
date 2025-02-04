@@ -79,7 +79,6 @@ def lanczos_iteration(vstart:SU2Tensor, numiter:int, H:SU2Tensor, L:SU2Tensor, R
         w = lanczos_step_apply_function(A=V[j], H=H, L=L, R=R)
 
         if verify_laczos_step:
-            # print(V[j].listOfChargeSectors)
             w_verify = lanczos_step_apply_function_verify(A=V[j], H=H, L=L, R=R)
             w_test = w.return_explicit_tensor_blocks()
 
@@ -148,8 +147,6 @@ def eigh_krylov(vstart:SU2Tensor, numiter:int, H:SU2Tensor, L:SU2Tensor, R:SU2Te
     print('Eigenwerte: ', w_hess)
     minEig = w_hess[0]
     u_min = u_hess[:, 0]
-    # minEig = w_hess[-1]
-    # u_min = u_hess[:, -1]
 
     out = V[0]
 
@@ -160,11 +157,9 @@ def eigh_krylov(vstart:SU2Tensor, numiter:int, H:SU2Tensor, L:SU2Tensor, R:SU2Te
     for i in range(1, len(u_min)):
         # out += u_min[i] * V[i]
         for chargeSector in V[i].listOfChargeSectors:
-            # TODO: Check if this is necessary because the charge sectors should not change for the different V[i]
             if chargeSector not in out.listOfChargeSectors:
                 out.listOfChargeSectors.append(chargeSector)
 
-                # out.listOfDegeneracyTensors.append(out.listOfDegeneracyTensors[V[i].listOfChargeSectors.index(chargeSector)])
                 out.listOfDegeneracyTensors.append(
                     u_min[i] * V[i].listOfDegeneracyTensors[V[i].listOfChargeSectors.index(chargeSector)])
             else:

@@ -1,8 +1,8 @@
 import numpy as np
-from su2tn.classical_benchmark.standard_MPO import MPO
-from su2tn.classical_benchmark.standard_MPS import (MPS, is_left_orthonormal, is_right_orthonormal,split_mps_tensor,
+from classical_benchmark.standard_MPO import MPO
+from classical_benchmark.standard_MPS import (MPS, is_left_orthonormal, is_right_orthonormal,split_mps_tensor,
                                                     local_orthonormalize_right_qr, local_orthonormalize_left_qr)
-from su2tn.classical_benchmark.standard_lanczos_method import eigh_krylov
+from classical_benchmark.standard_lanczos_method import eigh_krylov
 
 
 def contract_left_block(A, W, L):
@@ -185,11 +185,9 @@ def dmrg_two_site(H: MPO, psi: MPS, numsweeps, tol=1e-5, numiter=3, abort_condit
             # reshape into a matrix
             Hloc = np.reshape(Hloc, (s[0] * s[1] * s[2] * s[3], s[4] * s[5] * s[6] * s[7]))
             # The following can be accelerated by Krylov methods and a "matrix free" application of the local Hamiltonian.
-            # wloc, vloc = np.linalg.eigh(Hloc)
             Aloc = merge_two_MPS(psi.A[i], psi.A[i+1])
             vstart = np.reshape(Aloc, (Aloc.shape[0] * Aloc.shape[1] * Aloc.shape[2]))
             wloc, vloc = eigh_krylov(A=Hloc, vstart=vstart, numiter=numiter, numeig=1)
-            # wloc, vloc = np.linalg.eigh(Hloc)
             # select first eigenvector corresponding to lowest energy
             en = wloc[0]
             # optimized local tensor for two sites
@@ -198,7 +196,6 @@ def dmrg_two_site(H: MPO, psi: MPS, numsweeps, tol=1e-5, numiter=3, abort_condit
             assert is_left_orthonormal(psi.A[i])
             # update the left blocks
             BL[i + 1] = contract_left_block(psi.A[i], H.A[i], BL[i])
-            print(en)
             sweep_list.append(en)
 
         # sweep from right to left
@@ -222,7 +219,6 @@ def dmrg_two_site(H: MPO, psi: MPS, numsweeps, tol=1e-5, numiter=3, abort_condit
             assert is_right_orthonormal(psi.A[i + 1])
             # update the right blocks
             BR[i] = contract_right_block(psi.A[i + 1], H.A[i + 1], BR[i + 1])
-            print(en)
             sweep_list.append(en)
 
         # right-normalize leftmost tensor to ensure that 'psi' is normalized
@@ -304,7 +300,6 @@ def dmrg_one_site(H: MPO, psi: MPS, numsweeps, numiter=3, return_initial_energy=
     if return_initial_energy:
         H_mat = H.as_matrix()
         v_init = psi.as_vector()
-        print(np.linalg.norm(v_init))
         v_init = v_init / np.linalg.norm(v_init)
         init_en = v_init @ H_mat @ v_init
         print('Initial energy ', init_en)
@@ -325,7 +320,6 @@ def dmrg_one_site(H: MPO, psi: MPS, numsweeps, numiter=3, return_initial_energy=
             # reshape into a matrix
             Hloc = np.reshape(Hloc, (s[0] * s[1] * s[2], s[3] * s[4] * s[5]))
             # The following can be accelerated by Krylov methods and a "matrix free" application of the local Hamiltonian.
-            # wloc, vloc = np.linalg.eigh(Hloc)
             vstart = np.reshape(psi.A[i], (psi.A[i].shape[0] * psi.A[i].shape[1] * psi.A[i].shape[2]))
             wloc, vloc = eigh_krylov(A=Hloc, vstart=vstart, numiter=numiter, numeig=1)
             # select first eigenvector corresponding to lowest energy
@@ -333,11 +327,9 @@ def dmrg_one_site(H: MPO, psi: MPS, numsweeps, numiter=3, return_initial_energy=
             # optimized local tensor for two sites
             Aloc = np.reshape(vloc[:, 0], (s[0], s[1], s[2]))
             psi.A[i], psi.A[i + 1] = local_orthonormalize_left_qr(Aloc, psi.A[i + 1])
-            # psi.A[i], psi.A[i + 1] = split_mps_tensor(Aloc, psi.local_dim, psi.local_dim, "right", tol)
             assert is_left_orthonormal(psi.A[i])
             # update the left blocks
             BL[i + 1] = contract_left_block(psi.A[i], H.A[i], BL[i])
-            print(en)
             sweep_list.append(en)
 
         # sweep from right to left
@@ -349,7 +341,6 @@ def dmrg_one_site(H: MPO, psi: MPS, numsweeps, numiter=3, return_initial_energy=
             # reshape into a matrix
             Hloc = np.reshape(Hloc, (s[0] * s[1] * s[2], s[3] * s[4] * s[5]))
             # The following can be accelerated by Krylov methods and a "matrix free" application of the local Hamiltonian.
-            # wloc, vloc = np.linalg.eigh(Hloc)
             vstart = np.reshape(psi.A[i], (psi.A[i].shape[0] * psi.A[i].shape[1] * psi.A[i].shape[2]))
             wloc, vloc = eigh_krylov(A=Hloc, vstart=vstart, numiter=numiter, numeig=1)
             # select first eigenvector corresponding to lowest energy
@@ -360,7 +351,6 @@ def dmrg_one_site(H: MPO, psi: MPS, numsweeps, numiter=3, return_initial_energy=
             assert is_right_orthonormal(psi.A[i])
             # update the right blocks
             BR[i-1] = contract_right_block(psi.A[i], H.A[i], BR[i])
-            print(en)
             sweep_list.append(en)
 
         en_list.append(sweep_list)

@@ -49,11 +49,6 @@ def return_Heisenberg_su2_MPO_middle(J):
 
     listOfChargeSectors = [[1/2, 1/2, 0, 0, 1/2], [1/2, 1/2, 0, 1, 1/2], [1/2, 1/2, 1, 0, 1/2]]
 
-    gamma = 1j * np.sqrt(0.5 * (0.5 + 1))
-    # listOfDegeneracyTensors = [np.reshape(np.array([[1, 0], [0, 1]]), (1, 2, 2, 1)),
-    #                            np.reshape(np.array([gamma, 0]), (1, 2, 1, 1)),
-    #                            np.reshape(np.array([0, J * gamma]), (1, 1, 2, 1))]
-
     listOfDegeneracyTensors = [np.reshape(np.array([[1, 0], [0, 1]]), (1, 2, 2, 1)),
                                np.reshape(np.array([-1, 0]), (1, 2, 1, 1)),
                                np.reshape(np.array([0, J * (0.5 * (0.5 + 1))]), (1, 1, 2, 1))]
@@ -76,9 +71,6 @@ def return_Heisenberg_su2_MPO_left(J):
 
     listOfChargeSectors = [[1/2, 1/2, 0, 0, 1/2], [1/2, 1/2, 0, 1, 1/2]]
 
-    gamma = 1j * np.sqrt(0.5 * (0.5 + 1))
-    # listOfDegeneracyTensors = [np.reshape(np.array([1, 0]), (1, 1, 2, 1)),
-    #                            np.reshape(np.array([gamma]), (1, 1, 1, 1))]
     listOfDegeneracyTensors = [np.reshape(np.array([1, 0]), (1, 1, 2, 1)),
                                np.reshape(np.array([-1]), (1, 1, 1, 1))]
 
@@ -100,10 +92,6 @@ def return_Heisenberg_su2_MPO_right(J):
 
     listOfChargeSectors = [[1/2, 1/2, 0, 0, 1/2], [1/2, 1/2, 1, 0, 1/2]]
 
-    gamma = 1j * np.sqrt(0.5 * (0.5 + 1))
-    # listOfDegeneracyTensors = [np.reshape(np.array([[0, 1]]), (1, 2, 1, 1)),
-    #                            np.reshape(np.array([J * gamma]), (1, 1, 1, 1))]
-
     listOfDegeneracyTensors = [np.reshape(np.array([[0, 1]]), (1, 2, 1, 1)),
                                np.reshape(np.array([J * (0.5 * (0.5 + 1))]), (1, 1, 1, 1))]
 
@@ -111,14 +99,3 @@ def return_Heisenberg_su2_MPO_right(J):
                      fusionTree=fusionTree, fusionTreeDirections=fusionTreeDirections,
                      listOfChargeSectors=listOfChargeSectors)
 
-
-if __name__ == '__main__':
-    H_MPO = heisenberg_MPO(2, 1)
-
-    # print(H_MPO[1].return_explicit_tensor_blocks()[(0.5, 0, 1, 0.5)].shape)
-    # print(H_MPO[1].return_explicit_tensor_blocks()[(0.5, 0, 0, 0.5)].shape)
-    # print(H_MPO[1].return_explicit_tensor_blocks()[(0.5, 1, 0, 0.5)].shape)
-    #
-    # print(H_MPO[1].return_explicit_tensor_blocks().keys())
-
-    get_full_MPO_from_su2tensors(H_MPO)

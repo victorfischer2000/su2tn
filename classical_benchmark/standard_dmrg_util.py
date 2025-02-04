@@ -17,9 +17,6 @@ def retained_bond_indices(s, tol):
     if w == 0:
         return np.array([], dtype=int)
     # normalized squares
-    # print('norm', w)
-    # print('s', s)
-    # print('s**2', s**2)
     s = (s / w) ** 2
     # accumulate values from smallest to largest
     sort_idx = np.argsort(s)

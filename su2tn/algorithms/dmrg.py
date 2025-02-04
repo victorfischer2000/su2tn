@@ -59,9 +59,6 @@ def dmrg_one_site(H, psi, numsweeps, lanczos_numiter, return_initial_energy=Fals
             make_left_orthonormal(A_target=psi.A[i], A_right=psi.A[i + 1])
             BL[i + 1] = contract_left_block(psi.A[i], H.A[i], BL[i])
 
-            # construct_local_hamiltonian_explicit(L=BL[i], H=H.A[i], R=BR[i])
-
-            # H = construct_local_hamiltonian(L=BL[i], H=H.A[i], R=BR[i])
             print(en)
             sweep_list.append(en)
 
@@ -98,7 +95,6 @@ def dmrg_one_site(H, psi, numsweeps, lanczos_numiter, return_initial_energy=Fals
         en_list.append(sweep_list)
         # record energy after each sweep
         en_min[n] = en
-        print(en)
         print("sweep {} completed, current energy: {}".format(n + 1, en))
 
     return init_en, en_min, en_list

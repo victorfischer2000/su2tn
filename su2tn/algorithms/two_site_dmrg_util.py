@@ -5,21 +5,10 @@ from su2tn.su2_tensor import SU2Tensor
 
 
 def merge_two_MPS_tensors(A1, A2):
-    # print(A1.listOfDegeneracyTensors[0].shape)
-    # print(A2.listOfDegeneracyTensors[0].shape)
     output = SU2Tensor.einsum(A1, (0, 1, 2), A2, (3, 2, 4))
-    # print('einsum cs', output.listOfChargeSectors)
-    # for deg in output.listOfDegeneracyTensors:
-    #     print(deg)
     output.perform_f_move([node for node in output.fusionTree if 1 in node])
-    # print('fmove cs', output.listOfChargeSectors)
-    # print(len(output.listOfDegeneracyTensors))
-    # for deg in output.listOfDegeneracyTensors:
-    #     print(deg)
     output.perform_permutation(irrep1Name=-3, irrep2Name=-1)
-    # print('perm cs', output.listOfChargeSectors)
     output.fuse_neighboring_legs(irrepName1=-1, irrepName2=-3)
-    # print('fuse cs', output.listOfChargeSectors)
 
     fuse_info = [edge for edge in output.listOfOpenEdges if edge['edgeName'] == -1][0]['originalIrreps']
     merge_two_MPS_tensors_change_labeling(output)
@@ -69,12 +58,6 @@ def retained_bond_indices(s, j, tol):
     """
     Indices of retained singular values based on given tolerance.
     """
-    # w = np.linalg.norm(s)
-    # print('norm', w)
-    # if w == 0:
-    #     return np.array([], dtype=int)
-    # normalized squares
-    # s = (s / w)**2
     s = (s**2) * (2*j+1)
     # accumulate values from smallest to largest
     sort_idx = np.argsort(s)
@@ -153,9 +136,6 @@ def split_MPS_tensor(A, mode, fuse_info, tol):
             Aright.listOfOpenEdges[idx_right] = openEdge
             break
 
-        # update_listOfOpenEdges(A=A_target, irrepName=-3, irrepValue=charge_sector[1], new_dim=new_dim)
-        # update_listOfOpenEdges(A=A_right, irrepName=-2, irrepValue=charge_sector[1], new_dim=new_dim)
-
     Aleft.split_leg(splitIrrepName=-1)
 
     Aright.split_leg(splitIrrepName=-3)
@@ -192,12 +172,6 @@ def split_two_MPS_tensors_Aleft_change_labeling(A):
         elif edge['edgeName'] == -3:
             edge['edgeNumber'] = 3
 
-    for idx, deg in enumerate(A.listOfDegeneracyTensors):
-        # print(A.listOfDegeneracyTensors[idx].shape)
-        # A.listOfDegeneracyTensors[idx] = np.transpose(deg, (1, 2, 0))
-        pass
-        # print(A.listOfDegeneracyTensors[idx].shape)
-
     return A
 
 
@@ -220,9 +194,6 @@ def split_two_MPS_tensors_Aright_change_labeling(A):
             edge['edgeNumber'] = 3
 
     for idx, deg in enumerate(A.listOfDegeneracyTensors):
-        # print(A.listOfDegeneracyTensors[idx].shape)
-        # A.listOfDegeneracyTensors[idx] = np.transpose(deg, (2, 0, 1))
-        # print(A.listOfDegeneracyTensors[idx].shape)
         A.listOfDegeneracyTensors[idx] = np.transpose(deg, (1, 2, 0))
 
     return A
@@ -230,23 +201,17 @@ def split_two_MPS_tensors_Aright_change_labeling(A):
 
 def merge_two_MPO_tensors(H1, H2):
     output = SU2Tensor.einsum(H1, (0, 1, 2, 3), H2, (4, 2, 5, 6))
-    # print(output.fusionTree)
+
     output.perform_f_move([node for node in output.fusionTree if 3 in node])
-    # print(output.fusionTree)
+
     output.perform_f_move([node for node in output.fusionTree if 1 in node])
-    # print(output.fusionTree)
+
     output.perform_f_move([node for node in output.fusionTree if 2 in node])
-    # print(output.fusionTree)
 
     output.fuse_neighboring_legs(irrepName1=-1, irrepName2=-4)
-    # output.perform_permutation(irrep1Name=-3, irrep2Name=-6)
-    # output.fuse_neighboring_legs(irrepName1=-6, irrepName2=-3)
+
     output.fuse_neighboring_legs(irrepName1=-3, irrepName2=-6)
 
-    # print(output.fusionTree)
-    # print(output.nameOrdering)
-    # print(output.listOfChargeSectors)
-    # TODO: Check if dimensions are at correct place
     output = merge_two_MPO_tensors_change_labeling(output)
     return output
 
